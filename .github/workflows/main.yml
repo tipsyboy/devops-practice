@@ -78,7 +78,7 @@ jobs:
             echo "새 서버 준비 완료!"
 
             # 3. nginx upstream 포트 변경
-            sudo sed -i "s/server localhost:$OLD_PORT;/server localhost:$NEW_PORT;/" /etc/nginx/sites-available/default
+            sudo sed -i "s/server localhost:$OLD_PORT;/server localhost:$NEW_PORT;/" /etc/nginx/sites-enabled/default
 
             # 4. nginx 리로드 (무중단)
             sudo nginx -s reload
