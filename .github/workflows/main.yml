@@ -53,12 +53,50 @@ jobs:
           password: qwer1234
           port: 127
           script: |
-            docker stop back || true
-            docker rm back || true
-            docker image rm ${{ secrets.DOCKERHUB_USERNAME }}/back:latest
+            if docker ps --format "table {{.Names}}\t{{.Ports}}" | grep -q "8080->8080"; then
+                OLD_PORT=8080
+                NEW_PORT=8081
+                OLD_NAME="back"
+                NEW_NAME="back-green"
+            else
+                OLD_PORT=8081
+                NEW_PORT=8080
+                OLD_NAME="back-green"
+                NEW_NAME="back"
+            fi
             
-            docker image prune -f || true
+            echo "기존: $OLD_PORT, 새로운: $NEW_PORT"
+
+            # 1. 새 컨테이너 시작
+            docker run -d --name $NEW_NAME -p $NEW_PORT:8080 ${{ secrets.DOCKERHUB_USERNAME }}/back:latest
+
+            # 2. 헬스체크
+            echo "새 서버 헬스체크 중..."
+            while ! curl -f http://localhost:$NEW_PORT >/dev/null 2>&1; do 
+                sleep 1
+            done
+            echo "새 서버 준비 완료!"
+
+            # 3. nginx upstream 포트 변경
+            sudo sed -i "s/server localhost:$OLD_PORT;/server localhost:$NEW_PORT;/" /etc/nginx/sites-available/default
+
+            # 4. nginx 리로드 (무중단)
+            sudo nginx -s reload
+
+            # 5. 기존 컨테이너 정리
+            docker stop $OLD_NAME
+            docker rm $OLD_NAME
+
+            echo "배포 완료: $NEW_PORT 포트로 전환"
             
-            docker build --tag ${{ secrets.DOCKERHUB_USERNAME }}/back:latest .          
-            
-            docker run -d --name back -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/back:latest
+
+#          script: |
+#            docker stop back || true
+#            docker rm back || true
+#            docker image rm ${{ secrets.DOCKERHUB_USERNAME }}/back:latest
+#
+#            docker image prune -f || true
+#
+#            docker build --tag ${{ secrets.DOCKERHUB_USERNAME }}/back:latest .
+#
+#            docker run -d --name back -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/back:latest
