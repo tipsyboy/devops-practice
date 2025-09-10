@@ -4,7 +4,7 @@ on:
     branches: [main]
 jobs:
   build:
-    name: deploy
+    name: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -53,7 +53,8 @@ jobs:
           password: qwer1234
           port: 22
           script: |
-            docker rm -f back
-            docker image prune -f
+            docker stop back || true
+            docker rm back || true
+            docker image prune -f || true
             docker build --tag ${{ secrets.DOCKERHUB_USERNAME }}/back:latest .          
             docker run -d --name back -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/back:latest
