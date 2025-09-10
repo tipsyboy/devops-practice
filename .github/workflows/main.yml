@@ -15,4 +15,4 @@ jobs:
           password: qwer1234
           port: 127
           script:
-            echo test > /tmp/test
+            echo test > /tmp/sibal
