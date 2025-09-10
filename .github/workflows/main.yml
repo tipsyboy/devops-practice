@@ -51,10 +51,14 @@ jobs:
           host: 121.140.125.176
           username: test
           password: qwer1234
-          port: 22
+          port: 127
           script: |
             docker stop back || true
             docker rm back || true
+            docker image rm ${{ secrets.DOCKERHUB_USERNAME }}/back:latest
+            
             docker image prune -f || true
+            
             docker build --tag ${{ secrets.DOCKERHUB_USERNAME }}/back:latest .          
+            
             docker run -d --name back -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/back:latest
