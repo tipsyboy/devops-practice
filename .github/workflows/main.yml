@@ -76,8 +76,8 @@ jobs:
                 sleep 5
             done
             
-            echo 'test ALL=(ALL) NOPASSWD: /usr/sbin/nginx, /usr/bin/sed' | sudo tee /etc/sudoers.d/test-nginx-sed
-            sudo chmod 440 /etc/sudoers.d/test-nginx-sed
+#            echo 'test ALL=(ALL) NOPASSWD: /usr/sbin/nginx, /usr/bin/sed' | sudo tee /etc/sudoers.d/test-nginx-sed
+#            sudo chmod 440 /etc/sudoers.d/test-nginx-sed
             
             sudo sed -i "s/$OLD_PORT/$NEW_PORT/g" /etc/nginx/sites-enabled/default
             sudo nginx -s reload
