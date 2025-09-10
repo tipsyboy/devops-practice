@@ -8,6 +8,6 @@ public class TestController {
 
     @GetMapping
     public String test() {
-        return "sibal!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111!";
+        return "Hello Docker Hub Token";
     }
 }

@@ -1,38 +1,41 @@
 name: project deployment
-on: 
+on:
   push:
     branches: [main]
 jobs:
   deploy:
     name: deploy
     runs-on: ubuntu-latest
-    steps: 
-      - name: run ssh
-        uses: appleboy/ssh-action@v1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          host: 183.101.189.204
-          username: test
-          password: qwer1234
-          port: 127
-          script: |
-            echo "!!!!!!!!!!!!!!! START SSSSSSSSSSSSIBALLLLLLLLLLLLLL !!!!!!!!!!!!!!!!!!!!!!"
-            echo "!!!!!!!!!!! Git Clone !!!!!!!!!!!"
-            rm -rf ./docker-practice
-            git clone https://github.com/tipsyboy/docker-practice
-            
-            echo "!!!!!!!!!!! move Dir !!!!!!!!!!!"
-            cd ./docker-practice
-            
-            echo "!!!!!!!!!!! chmod !!!!!!!!!!!"
-            chmod 755 ./gradlew
-            
-            echo "!!!!!!!!!!! Build !!!!!!!!!!!"
-            ./gradlew bootJar
-            
-            echo "!!!!!!!!!!! Docker Build !!!!!!!!!!!"
-            docker rm -f back
-            docker image prune -f
-            docker build --tag tipsyboy/back:latest .
-            
-            echo "!!!!!!!!!!! Start APP !!!!!!!!!!!"
-            docker run -d --name back -p 8080:8080 tipsyboy/back:latest
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build jar with Gradle (uses build cache)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Gradle build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean bootJar
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: tipsyboy/back:latest
