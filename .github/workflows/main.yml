@@ -15,4 +15,12 @@ jobs:
           password: qwer1234
           port: 127
           script:
-            echo test > /tmp/sibal
+            rm -rf ./docker-practice
+            git clone https://github.com/tipsyboy/docker-practice.git
+            cd ./docker-practice
+            chmod 755 ./gradlew
+            ./gradlew bootJar
+            docker rm -f back
+            docker image prune -f
+            docker build --tag tipsyboy/back:latest .
+            docker run -d --name back -p 8080:8080 tipsyboy/back:latest
