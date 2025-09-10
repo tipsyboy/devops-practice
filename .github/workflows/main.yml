@@ -76,8 +76,6 @@ jobs:
                 sleep 5
             done
             
-
-            
             sudo sed -i "s/$OLD_PORT/$NEW_PORT/g" /etc/nginx/sites-enabled/default
             sudo nginx -s reload
 
