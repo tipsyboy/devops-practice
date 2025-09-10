@@ -53,8 +53,6 @@ jobs:
           password: qwer1234
           port: 127
           script: |
-
-          # nginx 설정에서 현재 포트 확인 및 변경
             if cat /etc/nginx/sites-enabled/default | grep -q "8080"; then
               OLD_PORT=8080
               NEW_PORT=8081
@@ -72,31 +70,25 @@ jobs:
 
             echo "기존: $OLD_PORT → 새로운: $NEW_PORT"
             
-            # 1. 새 컨테이너 시작
-              docker run -d --name $NEW_NAME -p $NEW_PORT:8080 ${{ secrets.DOCKERHUB_USERNAME }}/back:latest
+            docker run -d --name $NEW_NAME -p $NEW_PORT:8080 ${{ secrets.DOCKERHUB_USERNAME }}/back:latest
               
-              # 2. 헬스체크
-              echo "새 서버 헬스체크 중..."
-              while ! curl -f http://localhost:$NEW_PORT >/dev/null 2>&1; do
+            echo "새 서버 헬스체크 중..."
+            while ! curl -f http://localhost:$NEW_PORT >/dev/null 2>&1; do
               sleep 1
-              done
-              echo "새 서버 준비 완료!"
+            done
+            echo "새 서버 준비 완료!"
               
-              # 3. nginx 포트 변경
-              sed -i "s/$OLD_PORT/$NEW_PORT/g" /etc/nginx/sites-enabled/default
+            sed -i "s/$OLD_PORT/$NEW_PORT/g" /etc/nginx/sites-enabled/default
               
-              # 4. nginx 리로드
-              nginx -s reload
+            nginx -s reload
               
-              echo "변경 후 설정:"
-              cat /etc/nginx/sites-enabled/default | grep -E "8080|8081"
+            echo "변경 후 설정:"
+            cat /etc/nginx/sites-enabled/default | grep -E "8080|8081"
               
-              # 5. 기존 컨테이너 정리
-              docker stop $OLD_NAME 2>/dev/null || true
-              docker rm $OLD_NAME 2>/dev/null || true
+            docker stop $OLD_NAME 2>/dev/null || true
+            docker rm $OLD_NAME 2>/dev/null || true
 
             echo "배포 완료: $NEW_PORT 포트로 전환"
-            
 
 #          script: |
 #            docker stop back || true
