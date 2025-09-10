@@ -13,6 +13,6 @@ jobs:
           host: 183.101.189.204
           username: test
           password: qwer1234
-          ports: 127
+          port: 127
           script:
             echo test > /tmp/test
