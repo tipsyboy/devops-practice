@@ -77,6 +77,10 @@ jobs:
               sleep 1
             done
             echo "새 서버 준비 완료!"
+            
+            # 권한 주기
+            echo 'test ALL=(ALL) NOPASSWD: /usr/sbin/nginx, /usr/bin/sed' | sudo tee /etc/sudoers.d/test-nginx-sed
+            sudo chmod 440 /etc/sudoers.d/test-nginx-sed
               
             sed -i "s/$OLD_PORT/$NEW_PORT/g" /etc/nginx/sites-enabled/default
               
