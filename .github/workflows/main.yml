@@ -11,7 +11,7 @@ jobs:
         uses: appleboy/ssh-action@v1
         with:
           host: 183.101.189.204
-          username: ubuntu
+          username: test
           password: qwer1234
           ports: 127
           script:
