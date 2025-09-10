@@ -15,13 +15,23 @@ jobs:
           password: qwer1234
           port: 127
           script: |
-            echo >> /tmp/test
+            echo "Git Clone !!!!!!!!!!!"
             rm -rf ./docker-practice
-            git clone https://github.com/tipsyboy/docker-practice.git
+            git clone https://github.com/tipsyboy/docker-practice
+            
+            echo "move Dir !!!!!!!!!!!"
             cd ./docker-practice
+            
+            echo "chmod !!!!!!!!!!!"
             chmod 755 ./gradlew
+            
+            echo "Build !!!!!!!!!!!"
             ./gradlew bootJar
+            
+            echo "Docker Build !!!!!!!!!!!"
             docker rm -f back
             docker image prune -f
             docker build --tag tipsyboy/back:latest .
+            
+            echo "Start APP !!!!!!!!!!!"
             docker run -d --name back -p 8080:8080 tipsyboy/back:latest
