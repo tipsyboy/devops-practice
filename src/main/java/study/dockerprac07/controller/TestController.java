@@ -8,7 +8,7 @@ public class TestController {
 
     @GetMapping
     public String test() {
-//        return "과거에는 코드를 짜는 사람을 개발자라고 했다.";
-        return "현대에는 AI한테 질문하고 멍때리는 사람을 개발자라고 한다.";
+        return "과거에는 코드를 짜는 사람을 개발자라고 했다.";
+//        return "현대에는 AI한테 질문하고 멍때리는 사람을 개발자라고 한다.";
     }
 }
